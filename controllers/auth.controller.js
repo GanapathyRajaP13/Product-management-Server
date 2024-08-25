@@ -66,10 +66,8 @@ exports.login = async (req, res) => {
       username: user.username,
     });
     const refreshToken = await createRefreshToken(user.id);
-
-    res
-      .status(200)
-      .send({ auth: true, accessToken, refreshToken, userData: user });
+    const { password: userPassword, ...userData } = user;
+    res.status(200).send({ auth: true, accessToken, refreshToken, userData });
   } catch (error) {
     res.status(500).send({ error: "Error during login." });
   }
