@@ -76,7 +76,6 @@ exports.login = async (req, res) => {
 exports.refreshToken = async (req, res) => {
   try {
     const { refreshToken } = req.body;
-
     if (!refreshToken) return res.status(401).send("Refresh Token required.");
     const tokens = await findByToken(refreshToken);
     if (tokens.length === 0) {

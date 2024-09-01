@@ -1,4 +1,3 @@
-// controllers/user.controller.js
 const User = require("../models/user.model");
 
 exports.getUserProfile = async (req, res) => {
@@ -38,5 +37,19 @@ exports.getProductReview = async (req, res) => {
   } catch (error) {
     console.error("Error fetching review:", error);
     res.status(500).send({ success: false, error: "Error fetching review." });
+  }
+};
+
+exports.editProfileinfo = async (req, res) => {
+  const { info } = req.body;
+  try {
+    const result = await User.editProfileinfo(info);
+    if (!result || result.length === 0) {
+      return res.status(404).send({ message: "No Profile found." });
+    }
+    res.status(200).send({ success: true, result });
+  } catch (error) {
+    console.error("Error Profile Update:", error);
+    res.status(500).send({ success: false, error: "Error Profile Update." });
   }
 };

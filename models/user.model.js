@@ -77,6 +77,24 @@ const productReview = (id) => {
   });
 };
 
+const editProfileinfo = (info) => {
+  const { id, firstName, lastName, gender, email } = info;
+  const userName = `${firstName} ${lastName}`;
+  return new Promise((resolve, reject) => {
+    const query = `UPDATE users_mst
+      SET username = ?, firstname = ?, lastname = ?, gender = ?, email = ?
+      WHERE id = ?;`;
+    db.query(
+      query,
+      [userName, firstName, lastName, gender, email, id],
+      (err, result) => {
+        if (err) return reject(err);
+        resolve(result);
+      }
+    );
+  });
+};
+
 module.exports = {
   createUser,
   findByUsername,
@@ -84,4 +102,5 @@ module.exports = {
   getCount,
   getAllProducts,
   productReview,
+  editProfileinfo,
 };

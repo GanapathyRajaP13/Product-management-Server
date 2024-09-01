@@ -6,5 +6,6 @@ const authenticateToken = require('../middleware/auth.middleware');
 router.get('/profile', authenticateToken, userController.getUserProfile);
 router.get('/products', authenticateToken, userController.getProducts);
 router.post('/review', authenticateToken, userController.getProductReview);
+router.post('/editProfile', authenticateToken, userController.editProfileinfo);
 
 module.exports = router;
