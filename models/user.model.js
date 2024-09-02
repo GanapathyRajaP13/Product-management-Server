@@ -1,4 +1,11 @@
 const db = require("../config/db.config");
+const nodemailer = require("nodemailer");
+
+const otps = {};
+
+const generateOtp = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
 
 const createUser = async ({
   username,
@@ -95,6 +102,59 @@ const editProfileinfo = (info) => {
   });
 };
 
+const sendOTPmail = async (email, firstname, lastname) => {
+  const otp = generateOtp();
+  const normalizedEmail = email.toLowerCase().trim();
+  otps[normalizedEmail] = otp;
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  const mailContent = `Dear ${firstname} ${lastname},
+
+      You have requested a new OTP to edit your profile or change your password in the Product Management Application.
+        
+      Please enter the following OTP to proceed:
+
+      Your OTP code is: ${otp}
+
+  If you did not request this, please ignore this email.`;
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "OTP for Product Management",
+    text: mailContent,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    return { success: true, message: "OTP sent successfully!" };
+  } catch (error) {
+    return { success: false, message: "Failed to send OTP", error };
+  }
+};
+
+const verifyOtp = (email, otp) => {
+  try {
+    const normalizedEmail = email.toLowerCase().trim();
+
+    if (otps[normalizedEmail] && otps[normalizedEmail] === otp.otp) {
+      delete otps[normalizedEmail];
+      return { success: true, message: "OTP verified successfully!" };
+    }
+
+    return { success: false, message: "OTP not valid!" };
+  } catch (error) {
+    return { success: false, message: "Error verifying OTP.", error };
+  }
+};
+
 module.exports = {
   createUser,
   findByUsername,
@@ -103,4 +163,6 @@ module.exports = {
   getAllProducts,
   productReview,
   editProfileinfo,
+  sendOTPmail,
+  verifyOtp,
 };

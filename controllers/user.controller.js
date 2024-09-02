@@ -53,3 +53,37 @@ exports.editProfileinfo = async (req, res) => {
     res.status(500).send({ success: false, error: "Error Profile Update." });
   }
 };
+
+exports.sendOTP = async (req, res) => {
+  const { email, firstname, lastname } = req.body;
+  try {
+    const result = await User.sendOTPmail(email, firstname, lastname);
+    if (!result || result.length === 0) {
+      return res.status(404).send({ message: "Error send OTP." });
+    }
+    res.status(200).send(result);
+  } catch (error) {
+    console.error("Error send OTP:", error);
+    res.status(500).send({ success: false, error: "Error send OTP." });
+  }
+};
+
+exports.verifyOTP = (req, res) => {
+  const { email, otp } = req.body;
+
+  try {
+    const result = User.verifyOtp(email, otp);
+
+    if (!result.success) {
+      return res.status(400).send(result);
+    }
+
+    res.status(200).send(result);
+  } catch (error) {
+    console.error("Error verify OTP:", error);
+    res.status(500).send({
+      success: false,
+      error: "Internal server error while verifying OTP.",
+    });
+  }
+};
