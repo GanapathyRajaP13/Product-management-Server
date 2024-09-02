@@ -54,6 +54,20 @@ exports.editProfileinfo = async (req, res) => {
   }
 };
 
+exports.changePassword = async (req, res) => {
+  const { info } = req.body;
+  try {
+    const result = await User.passwordChange(info);
+    if (!result || result.length === 0) {
+      return res.status(404).send({ message: "No User Profile found." });
+    }
+    res.status(200).send({ success: true, result });
+  } catch (error) {
+    console.error("Error Password Update:", error);
+    res.status(500).send({ success: false, error: "Error Password Update." });
+  }
+};
+
 exports.sendOTP = async (req, res) => {
   const { email, firstname, lastname } = req.body;
   try {

@@ -1,5 +1,6 @@
 const db = require("../config/db.config");
 const nodemailer = require("nodemailer");
+const bcrypt = require("bcryptjs");
 
 const otps = {};
 
@@ -45,7 +46,7 @@ const findByUsername = (username) => {
 
 const findById = (id) => {
   return new Promise((resolve, reject) => {
-    const query = `SELECT id, username, firstname, lastname, gender, email, UserType, userCode, isActive 
+    const query = `SELECT id, username, firstname, lastname, gender, email, UserType, userCode, isActive, password 
     FROM users_mst WHERE id = ?`;
     db.query(query, [id], (err, result) => {
       if (err) return reject(err);
@@ -99,6 +100,31 @@ const editProfileinfo = (info) => {
         resolve(result);
       }
     );
+  });
+};
+
+const passwordChange = async (info) => {
+  const { id, currentPassword, newPassword } = info;
+  const users = await findById(id);
+  if (users.length === 0) return { success: false, message: "User not found." };
+
+  const user = users[0];
+  const passwordIsValid = bcrypt.compareSync(currentPassword, user.password);
+  if (!passwordIsValid)
+    return {
+      success: false,
+      message: "Invalid Current Password!",
+      pass: user.password,
+    };
+
+  const hashedPassword = bcrypt.hashSync(newPassword, 8);
+
+  return new Promise((resolve, reject) => {
+    const query = `UPDATE users_mst SET password = ? WHERE id = ?`;
+    db.query(query, [hashedPassword, id], (err, result) => {
+      if (err) return reject(err);
+      resolve(result);
+    });
   });
 };
 
@@ -165,4 +191,5 @@ module.exports = {
   editProfileinfo,
   sendOTPmail,
   verifyOtp,
+  passwordChange,
 };
