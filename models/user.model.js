@@ -67,7 +67,7 @@ const getCount = () => {
 
 const getAllProducts = () => {
   return new Promise((resolve, reject) => {
-    const query = `SELECT * FROM products`;
+    const query = `SELECT * FROM products ORDER BY id DESC`;
     db.query(query, (err, result) => {
       if (err) return reject(err);
       resolve(result);
