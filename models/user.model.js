@@ -44,6 +44,16 @@ const findByUsername = (username) => {
   });
 };
 
+const findUser = (username, role) => {
+  return new Promise((resolve, reject) => {
+    const query = "SELECT * FROM users_mst WHERE username = ? and UserType = ?";
+    db.query(query, [username, role], (err, result) => {
+      if (err) return reject(err);
+      resolve(result);
+    });
+  });
+};
+
 const findById = (id) => {
   return new Promise((resolve, reject) => {
     const query = `SELECT id, username, firstname, lastname, gender, email, UserType, userCode, isActive, password 
@@ -184,6 +194,7 @@ const verifyOtp = (email, otp) => {
 module.exports = {
   createUser,
   findByUsername,
+  findUser,
   findById,
   getCount,
   getAllProducts,

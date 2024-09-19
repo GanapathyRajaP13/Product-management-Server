@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const {
   createUser,
   findByUsername,
-  findById,
+  findUser,
 } = require("../models/user.model");
 const {
   createRefreshToken,
@@ -47,8 +47,8 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const users = await findByUsername(username);
+    const { username, password, role } = req.body;
+    const users = await findUser(username, role);
 
     if (users.length === 0)
       return res.status(404).send({ auth: false, status: "No user found." });
