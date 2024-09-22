@@ -4,6 +4,7 @@ const {
   createUser,
   findByUsername,
   findUser,
+  findUrls,
 } = require("../models/user.model");
 const {
   createRefreshToken,
@@ -66,8 +67,11 @@ exports.login = async (req, res) => {
       username: user.username,
     });
     const refreshToken = await createRefreshToken(user.id);
+    const userURL = await findUrls(user.id);
     const { password: userPassword, ...userData } = user;
-    res.status(200).send({ auth: true, accessToken, refreshToken, userData });
+    res
+      .status(200)
+      .send({ auth: true, accessToken, refreshToken, userData, userURL });
   } catch (error) {
     res.status(500).send({ error: "Error during login." });
   }
