@@ -89,7 +89,7 @@ exports.verifyOTP = (req, res) => {
     const result = User.verifyOtp(email, otp);
 
     if (!result.success) {
-      return res.status(400).send(result);
+      return res.status(202).send(result);
     }
 
     res.status(200).send(result);

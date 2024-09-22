@@ -22,13 +22,13 @@ exports.register = async (req, res) => {
   try {
     const { username, password, firstName, lastName, gender, email } = req.body;
 
-    // Check if the user already exists
     const existingUser = await findByUsername(username);
     if (existingUser.length > 0) {
-      return res.status(409).json({ error: "Username already exists." });
+      return res
+        .status(202)
+        .json({ success: false, message: "Username already exists." });
     }
 
-    // Hash the password
     const hashedPassword = bcrypt.hashSync(password, 8);
     await createUser({
       username,
@@ -39,8 +39,9 @@ exports.register = async (req, res) => {
       email,
     });
 
-    // Respond with success
-    res.status(201).send("User registered successfully!");
+    res
+      .status(201)
+      .send({ success: true, message: "User registered successfully!" });
   } catch (error) {
     res.status(500).send({ error: "Error registering user." });
   }
@@ -67,7 +68,7 @@ exports.login = async (req, res) => {
       username: user.username,
     });
     const refreshToken = await createRefreshToken(user.id);
-    const userURL = await findUrls(user.id);
+    const userURL = await findUrls(user.UserType);
     const { password: userPassword, ...userData } = user;
     res
       .status(200)

@@ -57,7 +57,7 @@ const findUser = (username, role) => {
 const findUrls = (id) => {
   return new Promise((resolve, reject) => {
     const query = `SELECT um.id, um.ScreenUrl, um.screenName FROM user_url_mapping AS uu JOIN urlmaster AS um
-                    ON uu.url_id = um.id WHERE uu.user_id = ?`;
+                    ON uu.url_id = um.id WHERE uu.UserType = ?`;
     db.query(query, [id], (err, result) => {
       if (err) return reject(err);
       resolve(result);
@@ -196,7 +196,7 @@ const verifyOtp = (email, otp) => {
       return { success: true, message: "OTP verified successfully!" };
     }
 
-    return { success: false, message: "OTP not valid!" };
+    return { success: false, message: "otp not valid!" };
   } catch (error) {
     return { success: false, message: "Error verifying OTP.", error };
   }
